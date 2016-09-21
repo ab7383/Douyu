@@ -13,10 +13,12 @@ def  main():
   i = 1
   count = 0
   limit = 5
-  GetDm = Getdanmu(rid)
+  s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+  rid = input('please enter a room id:')
+  GetDm = GetDanmu(rid)
 
 
-  s = GetDm.connect() 
+  GetDm.connect(s) 
   GetDm.login(s)
   while i == 1:
     byt = s.recv(1024)
@@ -30,3 +32,4 @@ def  main():
     print(DM)
     print('\n')
 
+main()

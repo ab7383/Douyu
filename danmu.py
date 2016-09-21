@@ -32,31 +32,32 @@ class GetDanmu(object):
 
   def __init__(self,room):
     self.room = room
-    self.DMserver = "type@=joingroup/rid@={room}/gid@=-9999/\0".format(self.room = rid)
-    self.login = "type@=loginreq/roomid@={room}/\0".format(self.room = rid)
     self.HB = "type@=keeplive/tick@=1439802131\0"
+    self.DMserverStr = "type@=joingroup/rid@={self.room}/gid@=-9999/\0".format(self = self)
+    self.LoginStr = "type@=loginreq/roomid@={self.room}/\0".format(self = self)
 
-  def msghead(self,msgstr):
+
+  def msgHead(self,msgstr):
     data_length = len(msgstr)+8
     code = 689
     msgHead =int.to_bytes(data_length,4,'little')+int.to_bytes(data_length,4,'little')+int.to_bytes(code,4,'little')
     return msgHead
 
-  def sendmsg(self,s,msgS):
+  def Message(self,msgS):
     msgS = msgS.encode('utf-8')
-    msg = msgHead(msgS) + msgS
+    msg = self.msgHead(msgS) + msgS
     return msg
 
   def login(self,s):
-    sendmsg(s,self.login)
+    print (self.LoginStr)
+    s.send(self.Message(self.LoginStr))
     s.recv(512)
-    sendmsg(s,selg.DMserver)
-    s.recv()
+    s.send(self.Message(self.DMserverStr))
+    s.recv(512)
   
   def connect(self,s):
     port = 8601
     s.connect(("openbarrage.douyutv.com",port))
-    return s
 
   def clean(self,byt):
     id = re.search(b'(uid@=)(.)*?\/',byt)
@@ -77,6 +78,6 @@ class GetDanmu(object):
 
   def Heart(self,s):
     Hb = self.HB.encode('utf-8')
-    heartbeat = msgHead(Hb)+Hb
+    heartbeat = self.msgHead(Hb)+Hb
     s.send(heartbeat)
 
