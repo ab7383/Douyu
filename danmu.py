@@ -53,8 +53,7 @@ class GetDanmu(object):
     s.send(self.Message(self.LoginStr))
     s.recv(512)
     s.send(self.Message(self.DMserverStr))
-    s.recv(512)
-  
+   
   def connect(self,s):
     port = 8601
     s.connect(("openbarrage.douyutv.com",port))
@@ -63,7 +62,7 @@ class GetDanmu(object):
     id = re.search(b'(uid@=)(.)*?\/',byt)
     nickname = re.search(b'(nn@=)(.)*?\/',byt)
     txt = re.search(b'(txt@=)(.)*?\/',byt)
-    Time = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+    Time = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
     if id==None or nickname==None or txt==None:
       return None
     else:
