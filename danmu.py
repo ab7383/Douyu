@@ -2,9 +2,8 @@
 import time
 import sys
 import socket
-import threading
 import re
-import pymysql
+from urllib.request import urlopen
 
 class danmu (object):
   def __init__(self):
@@ -32,9 +31,11 @@ class GetDanmu(object):
 
   def __init__(self,room):
     self.room = room
-    self.HB = "type@=keeplive/tick@=1439802131\0"
-    self.DMserverStr = "type@=joingroup/rid@={self.room}/gid@=-9999/\0".format(self = self)
-    self.LoginStr = "type@=loginreq/roomid@={self.room}/\0".format(self = self)
+    self.logout = "type@=logout/".encode('utf-8')
+    self.HB = "type@=keeplive/tick@=1439802131\0".encode('utf-8')
+    self.DMserverStr = "type@=joingroup/rid@={self.room}/gid@=-9999/\0".format(self = self).encode('utf-8')
+    self.LoginStr = "type@=loginreq/roomid@={self.room}/\0".format(self = self).encode('utf-8')
+    self.Html = "https://www.douyu.com/{self.room}".format(self = self)
 
 
   def msgHead(self,msgstr):
@@ -44,7 +45,6 @@ class GetDanmu(object):
     return msgHead
 
   def Message(self,msgS):
-    msgS = msgS.encode('utf-8')
     msg = self.msgHead(msgS) + msgS
     return msg
 
@@ -53,6 +53,12 @@ class GetDanmu(object):
     s.send(self.Message(self.LoginStr))
     s.recv(512)
     s.send(self.Message(self.DMserverStr))
+
+  def Heart(self,s):
+    s.send(self.Message(self.HB))
+
+  def Log_out(self,s):
+    s.send(self.message(self.logout))
    
   def connect(self,s):
     port = 8601
@@ -75,8 +81,16 @@ class GetDanmu(object):
       except Exception as e:
         return None
 
-  def Heart(self,s):
-    Hb = self.HB.encode('utf-8')
-    heartbeat = self.msgHead(Hb)+Hb
-    s.send(heartbeat)
+  def Is_alive(self):
+    try:
+     status = re.search('''"show_status":.''' ,urlopen(self.Html).read().decode('utf-8')).group(0)
+    except Exception as e:
+      print("the room is not exist")
+#    status = re.search('''"show_status":.''',H).group(0)
+    status_value = int(re.search("[1-9]",status).group(0))
+    if status_value == 1:
+      return True
+    else:
+      return False
 
+ 
