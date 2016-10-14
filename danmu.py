@@ -25,18 +25,15 @@ class danmu (object):
   def setTime(self,time):
     self.__time = time
 
-
-
 class GetDanmu(object):
 
   def __init__(self,room):
     self.room = room
     self.logout = "type@=logout/".encode('utf-8')
-    self.HB = "type@=keeplive/tick@=1439802131\0".encode('utf-8')
     self.DMserverStr = "type@=joingroup/rid@={self.room}/gid@=-9999/\0".format(self = self).encode('utf-8')
     self.LoginStr = "type@=loginreq/roomid@={self.room}/\0".format(self = self).encode('utf-8')
     self.Html = "https://www.douyu.com/{self.room}".format(self = self)
-
+    self.HB = "type@=keeplive/tick@=1439802131\0".encode('utf-8')
 
   def msgHead(self,msgstr):
     data_length = len(msgstr)+8
@@ -54,15 +51,17 @@ class GetDanmu(object):
     s.recv(512)
     s.send(self.Message(self.DMserverStr))
 
-  def Heart(self,s):
-    s.send(self.Message(self.HB))
-
   def Log_out(self,s):
     s.send(self.message(self.logout))
    
   def connect(self,s):
     port = 8601
     s.connect(("openbarrage.douyutv.com",port))
+
+  def Heart(self,s):
+    while 1:
+      time.sleep(25)
+      s.send(self.Message(self.HB))
 
   def clean(self,byt):
     id = re.search(b'(uid@=)(.)*?\/',byt)
@@ -86,11 +85,10 @@ class GetDanmu(object):
      status = re.search('''"show_status":.''' ,urlopen(self.Html).read().decode('utf-8')).group(0)
     except Exception as e:
       print("the room is not exist")
-#    status = re.search('''"show_status":.''',H).group(0)
     status_value = int(re.search("[1-9]",status).group(0))
     if status_value == 1:
       return True
     else:
       return False
 
- 
+
