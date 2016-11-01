@@ -52,10 +52,10 @@ class GetDanmu(object):
     s.send(self.Message(self.DMserverStr))
 
   def Log_out(self,s):
-    s.send(self.message(self.logout))
+    s.send(self.Message(self.logout))
    
   def connect(self,s):
-    port = 8601
+    port = 8602
     s.connect(("openbarrage.douyutv.com",port))
 
   def Heart(self,s):
@@ -91,4 +91,11 @@ class GetDanmu(object):
     else:
       return False
 
+class Danmu_Write(object):
+  def __init__(self,File_name):
+    self.File_name = File_name
 
+  def WriteDM(self,DM):
+    with open('./{self.File_name}'.format(self = self),'a+') as f:
+      f.write(DM+'\n') 
+      
