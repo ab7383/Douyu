@@ -10,31 +10,46 @@ from danmu import *
 
 
 def  main():
+  global Time_Begain,Time_Last,Write
+  Time_Begain = time.time()
+  Time_Last = time.time() - Time_Begain
+
   s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-#  s.setsockopt(socket.SOL_SOCKET,socket.SO_KEEPALIVE,1)
   rid = input('please enter a room id:')
+  Time_Limit =int(input('How long would you want:'))
   GetDm = GetDanmu(rid)
-  thread_list = []
+  Write = Danmu_Write(rid)
 
   if GetDm.Is_alive():
     t2 = threading.Thread(target = GetDm.Heart, args=(s,))
-    t1 = threading.Thread(target = run, args=(s,GetDm,))
-    t1.start()
+    t2.setDaemon(True)
     t2.start()
+    run(s,GetDm,Time_Limit)
+    GetDm.Log_out(s)
+    print('get danmu is complited')
   else:
-    GetDm.Logout(s)
     print('the live_room has closed')
+  
 
 
-def run(s,GetDm):
+def run(s,GetDm,Time_Limit):
     GetDm.connect(s)
     GetDm.login(s)
+    global Time_Begain,Time_Last,Write
 
-    while 1:
-      byt = s.recv(1024)
+    while Time_Limit > Time_Last:
+      try:
+        byt = s.recv(1024)
+      except Exception as e:
+        if not GetDm.Is_alive():
+          break
+        else:
+          continue
       DM = GetDm.clean(byt) 
       if DM == None:
         continue
       print(DM)
+      Write.WriteDM(str(DM))
       print('\n')
+      Time_Last = time.time() - Time_Begain
 main()
