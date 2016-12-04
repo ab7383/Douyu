@@ -28,7 +28,8 @@ class danmu (object):
 
 class GetDanmu(object):
 
-  def __init__(self,room ,Time_Limit):
+  def __init__(self,name,room ,Time_Limit = 7200):
+    self.name = name
     self.room = room
     self.Time_Limit =float(Time_Limit)
     self.logout = "type@=logout/".encode('utf-8')
@@ -36,6 +37,9 @@ class GetDanmu(object):
     self.LoginStr = "type@=loginreq/roomid@={self.room}/\0".format(self = self).encode('utf-8')
     self.Html = "https://www.douyu.com/{self.room}".format(self = self)
     self.HB = "type@=keeplive/tick@=1439802131\0".encode('utf-8')
+
+  def Getname(self):
+    return self.name
 #包头处理
   def msgHead(self,msgstr):
     data_length = len(msgstr)+8
@@ -76,7 +80,7 @@ class GetDanmu(object):
        # nickname = nickname.group(0).decode()
         txt = txt.group(0).decode()
         txt = re.search('[^txt@=]\D*\d*[^\/]',txt).group(0)
-        DM = (Time,txt)
+        DM = [Time,txt]
         return DM
       except Exception as e:
         return None
@@ -93,15 +97,15 @@ class GetDanmu(object):
       return False
 #写入文件
   def WriteDM(self,DM):
-    with open('./Danmu/{self.room}'.format(self = self),'a+') as f:
-      f.write(DM+'\n') 
+    with open('./Danmu/{self.room}+{self.name}'.format(self = self),'a+') as f:
+      f.write(str(DM[0]) +' : '+ str(DM[1]) + '\n') 
 #获取弹幕
   def Get(self,s,Time_Limit):
     self.connect(s)
     self.login(s)
     global Time_Begain,Time_Last
 
-    while self.Time_Limit > Time_Last:
+    while self.Time_Limit >= Time_Last:
       try:
         byt = s.recv(1024)
       except Exception as e:
@@ -112,9 +116,9 @@ class GetDanmu(object):
       DM = self.clean(byt)
       if DM == None:
         continue
-     # print(DM)
-      self.WriteDM(str(DM))
-     # print('\n')
+      #print(DM)
+      self.WriteDM(DM)
+      #print('\n')
       Time_Last = time.time() - Time_Begain
 
 #运行程序
@@ -124,8 +128,6 @@ class GetDanmu(object):
     Time_Last = time.time() - Time_Begain
 
     s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
- # rid = input('please enter a room id:')
- # Time_Limit =int(input('How long would you want:'))
 
     if self.Is_alive():
       t1 = threading.Thread(target = self.Heart, args=(s,))
