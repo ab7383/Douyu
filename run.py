@@ -5,7 +5,7 @@ import sys
 import multiprocessing
 
 
-limit_time = 3600
+limit_time = 36000
 def read_room(limit = 6):
   Ancho_list = []
   with open("./room_list","r") as f:
