@@ -7,35 +7,20 @@ from bs4 import BeautifulSoup
 class Get_room(object):
 
   def __init__(self):
-    self.page = 1
-    self.url_0 = "https://www.douyu.com/directory/all"
-    self.url_1 = "https://www.douyu.com/directory/all?page={page}&isAjax=1".format(page = self.page)
-
-  #def get_num(self,page):
-   # return page.get_text()
-  
+    pass 
   def Parser(self,url):
     soup = BeautifulSoup(urlopen(url),'html.parser')
     return soup
  
- # def Max_page(self):
-   # soup_0 = self.Parser(self.url_0)
-   # page1 = urlopen("https://www.douyu.com/directory/all")
-   # soup_0 = BeautifulSoup(page1,"lxml")
-   # page_list = soup_0.find(id="J-pager")
-   # print(page_list)
-   # max_page = max(map(self.get_num , page_list))
-   # return int(max_page)
-
-
   def Get_Ancho(self):
-    #max_page = self.Max_page
+    page = 1
     Ancho_List = []
 
     print("正在抓取房间"+"\n")
-    while self.page <= 50:
-      soup = self.Parser(self.url_1)
-      self.page +=1
+    while page <= 50:
+      url = "https://www.douyu.com/directory/all?page={page}&isAjax=1".format(page = page)
+      soup = self.Parser(url)
+      page +=1
       Anchos = soup.findAll("li")
 
       for Ancho in Anchos:
