@@ -1,2 +1,2 @@
-# Douyu
-catch the danmu on douyuTV
+大学时用python做的一个简单分布式抓取斗鱼弹幕程序。
+报文格式是斗鱼公开的第三方协议里面的斗鱼自定义格式，不知道变没变
